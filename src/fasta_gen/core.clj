@@ -32,11 +32,12 @@
     seq
     (base-sequence (dec n), (str seq (random-base)))))
 
-(def fasta-unit
-  (let [r (rand-int 100)]
-    (str ">test_fasta-" (str r) "\n" (base-sequence 20 ""))))
+(defn fasta-unit
+  [n]
+  (str ">test_fasta-" (str n) "\n" (base-sequence 20 "")))
       
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println fasta-unit))
+  (doseq [i (range 10)]
+    (println (fasta-unit i))))
