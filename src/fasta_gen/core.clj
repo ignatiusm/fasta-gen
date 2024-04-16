@@ -37,7 +37,10 @@
   (str ">test_fasta-" (str n) "\n" (base-sequence seq-len "")))
       
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Generates random FASTA files. Requires three args: num of sequences; min sequence length; max sequence length"
   [& args]
-  (doseq [i (range (Integer/parseInt (first args)))]
-    (println (fasta-unit i (Integer/parseInt (second args))))))
+  ;; convert each argument from string to integer
+  (let [int-args (map #(Integer/parseInt %) args)]
+    (doseq [i (range (nth int-args 0))]
+      (let [n (rand-int(- (nth int-args 2) (nth int-args 1)))]
+      (println (fasta-unit i (+ n (nth int-args 1))))))))
