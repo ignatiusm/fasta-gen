@@ -33,11 +33,11 @@
     (base-sequence (dec n), (str seq (random-base)))))
 
 (defn fasta-unit
-  [n]
-  (str ">test_fasta-" (str n) "\n" (base-sequence 20 "")))
+  [n, seq-len]
+  (str ">test_fasta-" (str n) "\n" (base-sequence seq-len "")))
       
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (doseq [i (range 10)]
-    (println (fasta-unit i))))
+  (doseq [i (range (Integer/parseInt (first args)))]
+    (println (fasta-unit i (Integer/parseInt (second args))))))
