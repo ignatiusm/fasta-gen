@@ -31,10 +31,12 @@
   (if (= n 0)
     seq
     (base-sequence (dec n), (str seq (random-base)))))
+
+(def fasta-unit
+  (let [r (rand-int 100)]
+    (str ">test_fasta-" (str r) "\n" (base-sequence 20 ""))))
       
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  ;; Call the random function without an argument
-  ;; This will generate a random number
-  (println "Sequence:" (base-sequence 10 "")))
+  (println fasta-unit))
