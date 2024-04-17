@@ -2,6 +2,7 @@
   (:require [clojure.math.numeric-tower :as math])
   (:gen-class))
 
+; "Implementation of one of Knuth's random number algorithms. Ported from scheme (source: https://stackoverflow.com/questions/14674165/scheme-generate-random)"
 (def random
   (let [a 69069
         c 1
@@ -27,20 +28,49 @@
       :else (nth n-bases 3)
       )))
       
-(defn base-sequence [n, seq]
+(defn base-sequence
+  "Recursively add random nucleotide bases to create a sequence of length n."
+  [n, seq]
   (if (= n 0)
     seq
     (base-sequence (dec n), (str seq (random-base)))))
 
-(defn fasta-unit
-  [n, seq-len]
-  (str ">test_fasta-" (str n) "\n" (base-sequence seq-len "")))
+(defn make-seq
+  "Represents a graph as a list, first item as a node, with rest of items as children. Items are FASTA sequences of varying lengths"
+  [min-seq-len, max-seq-len, lst]
+  (let [len (rand-int(- max-seq-len min-seq-len))]
+      (base-sequence (+ len min-seq-len) lst)))
+
+(defn make-graph [x, min-seq-len, max-seq-len]
+  ;; Define a loop-recur construct with initial values
+  (loop [count 0        ;; Initial count is 0
+         results []]    ;; Initial list is empty
+    ;; Check if the loop should continue
+    (if (< count x)
+      ;; Perform the operation and append the result to the list
+      (let [result (make-seq min-seq-len max-seq-len "")]
+        ;; Use recur to continue the loop with updated values
+        (recur (inc count) (conj results result)))
+      ;; Return the final list of results when the loop ends
+      results)))
+
+(defn make-edge [lst kmer]
+  ;; Destructure the list to separate the first item and the rest of the items
+  (let [[first-item & rest-items] lst]
+    ;; Append the kmer to the end of the first item
+    (let [modified-first-item (str first-item kmer)]
+      ;; Append the kmer to the start of the rest of the items using `map`
+      (let [modified-rest-items (map #(str kmer %) rest-items)]
+        ;; Combine the modified first item and rest items into a new list
+        (cons modified-first-item modified-rest-items)))))
+
+;(defn make-edge
+;  [graph, k]
+;  (let )
       
 (defn -main
-  "Generates random FASTA files. Requires three args: num of sequences; min sequence length; max sequence length"
+  "Generates a number of random FASTA sequences. Requires three args: num of sequences; min sequence length; max sequence length"
   [& args]
   ;; convert each argument from string to integer
   (let [int-args (map #(Integer/parseInt %) args)]
-    (doseq [i (range (nth int-args 0))]
-      (let [n (rand-int(- (nth int-args 2) (nth int-args 1)))]
-      (println (fasta-unit i (+ n (nth int-args 1))))))))
+    (println (make-edge (make-graph (nth int-args 0) (nth int-args 1) (nth int-args 2)) (base-sequence 6 "")))))
