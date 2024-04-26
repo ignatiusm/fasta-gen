@@ -64,13 +64,25 @@
         ;; Combine the modified first item and rest items into a new list
         (cons modified-first-item modified-rest-items)))))
 
-;(defn make-edge
-;  [graph, k]
-;  (let )
-      
+(defn random-graph [num-nodes num-edges]
+  (let [nodes (range num-nodes)
+        edges (loop [edges #{}]
+                (if (< (count edges) num-edges)
+                  (let [node1 (rand-nth nodes)
+                        node2 (rand-nth nodes)
+                        new-edge [node1 node2]]
+                    (if (and (not= node1 node2)
+                             (not (contains? edges new-edge))
+                             (not (contains? edges [node2 node1])))
+                      (recur (conj edges new-edge))
+                      (recur edges)))
+                  edges))]
+    {:nodes nodes :edges (vec edges)}))
+
 (defn -main
-  "Generates a number of random FASTA sequences. Requires three args: num of sequences; min sequence length; max sequence length"
+  "Generates graph of random FASTA sequences with a kmer suffix or prefix. Requires four args: num of sequences in graph; min sequence length; max sequence length; kmer length"
   [& args]
   ;; convert each argument from string to integer
   (let [int-args (map #(Integer/parseInt %) args)]
-    (println (make-edge (make-graph (nth int-args 0) (nth int-args 1) (nth int-args 2)) (base-sequence 6 "")))))
+    (println (make-edge (make-graph (nth int-args 0) (nth int-args 1) (nth int-args 2)) (base-sequence 6 "")))
+    (println (make-edge (make-graph (nth int-args 0) (nth int-args 1) (nth int-args 2)) (base-sequence (nth int-args 3) "")))))
